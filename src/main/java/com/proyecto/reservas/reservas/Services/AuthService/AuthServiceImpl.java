@@ -28,25 +28,56 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RolRepository rolRepository;
 
-    // IMPLEMENTACION DEL METODO PARA NORMALIZAR TEXTOS Y GUARDAR A LOS USUARIOS SIN
-    // TILDES
+    // IMPLEMENTACION DEL METODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
+    // LA PRIMERA LETRA DDEL NOMBRE Y APELLIDO EN MAYÚSCULA)
     private String normalizarTextos(String text) {
-        return Normalizer.normalize(text, Normalizer.Form.NFD)
+
+        // Elimino primero los acentos
+        String textoNormalizado = Normalizer.normalize(text, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        // Convierto to el texto normalizado a minúsculas
+        textoNormalizado = textoNormalizado.toLowerCase();
+
+        // Separo las palabras
+        String[] palabras = textoNormalizado.split("\\s+");
+
+        // Cojo la primera letra de cada palabra y la convierto en mayúscula
+        StringBuilder textoConPrimeraLetraMayus = new StringBuilder();
+        for (String palabra : palabras) {
+            if (palabra.length() > 0) {
+                textoConPrimeraLetraMayus.append(Character.toUpperCase(palabra.charAt(0)))
+                        .append(palabra.substring(1))
+                        .append(" ");
+            }
+        }
+
+        // Elimino el y devuelvo el resultado
+        return textoConPrimeraLetraMayus.toString().trim();
+
     }
 
-    // IMPLEMENTACION DEL METODO PARA VER SI ESE ROL EXISTE EN LA BASE DE DATOS, SI
-    // NO EXISTE LO HE
-    // PUESTO QUE SE CREE POR DEFECTO CON EL ROL USER
+    // IMPLEMENTACION DEL METODO PARA VER SI ESE ROL EXISTE EN LA BASE DE DATOS
     private void existeElRol() {
-        String roleName = ERol.USER.name();
-        Optional<RolModel> optionalRol = rolRepository.findByName(roleName);
+        verificarYCrearRol(ERol.ADMIN);
+        verificarYCrearRol(ERol.OWNER);
+        verificarYCrearRol(ERol.USER);
+        // verificarYCrearRol(ERol.INVITED); // Creo que no hace falta porque en el
+        // front se hace una comprobación de que si no tiene token que lo envie al login
+    }
 
+    // SI EL ROL NO EXISTE LO HE PUESTO POR DEFECTO QUE SE CREEN TODOS LOS TIPOS DE
+    // ROL EN MI APP
+    private void verificarYCrearRol(ERol rol) {
+        // Verifico si el rol ya existe en la base de datos
+        Optional<RolModel> optionalRol = rolRepository.findByName(rol.name());
+
+        // Si el rol no existe, se crea uno nuevo
         if (optionalRol.isEmpty()) {
-            RolModel rolUsuario = new RolModel();
-            rolUsuario.setName(ERol.USER);
-            rolUsuario.setRolId(UUID.randomUUID().toString()); // Genero un UUID para el rol
-            rolRepository.save(rolUsuario);
+            RolModel nuevoRol = new RolModel();
+            nuevoRol.setName(rol);
+            nuevoRol.setRolId(UUID.randomUUID().toString()); // Genero un UUID para el rol
+            rolRepository.save(nuevoRol);
         }
     }
 
@@ -77,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        // Si todas son letras piedo que mi contraseña tenga al menos un número
+        // Si todas son letras pido que mi contraseña tenga al menos un número
         if (tieneLetras && !tieneNumeros) {
             return ResponseEntity.badRequest().body("La contraseña debe contener al menos un número.");
         }
@@ -108,10 +139,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> crearNuevoUsuario(CrearUsuarioDTO crearUsuarioDTO) {
 
-        String nombre = crearUsuarioDTO.getNombre().trim().toUpperCase();
-        String apellido = crearUsuarioDTO.getApellido().trim().toUpperCase();
+        String nombre = crearUsuarioDTO.getNombre().trim();
+        String apellido = crearUsuarioDTO.getApellido().trim();
         String email = crearUsuarioDTO.getEmail().trim();
         String password = crearUsuarioDTO.getPassword().trim();
+        String rolSeleccionado = crearUsuarioDTO.getRol().trim().toUpperCase(); // Asi el usuario seleccione user en minúscula se pondrá siempre en mayúscula porque lo tengo con mayúsculas en el ENUM
 
         if (usuarioRepository.existsByEmail(email)) {
             return ResponseEntity.badRequest().body("Prueba con otro email");
@@ -124,12 +156,17 @@ public class AuthServiceImpl implements AuthService {
             return validacionPassword;
         }
 
-        existeElRol(); // Me aseguro si ese rol existe en la base de datos
+        existeElRol(); // Me aseguro si ese rol existe en la base de datos, y si no existe que se cree
+
+        // Validar si el rol seleccionado es válido
+        if (!rolSeleccionado.equals(ERol.USER.name()) && !rolSeleccionado.equals(ERol.OWNER.name())) {
+            return ResponseEntity.badRequest().body("El rol seleccionado no es válido");
+        }
 
         // Obtengo el rol de usuario directamente usando el nombre del rol (USER en este
         // caso)
-        RolModel rolUsuario = rolRepository.findByName(ERol.USER.name())
-                .orElseThrow(() -> new RuntimeException("Rol de usuario no encontrado"));
+        RolModel rolUsuario = rolRepository.findByName(rolSeleccionado)
+                .orElseThrow(() -> new RuntimeException("Rol de usuario no encontrado " + rolSeleccionado));
 
         // Modifico el DTO antes de construir el usuario
         crearUsuarioDTO.setEmail(email);
@@ -149,8 +186,8 @@ public class AuthServiceImpl implements AuthService {
     // IMPLEMENTACION DEL METODO PARA CONSTRUIR UN NUEVO USUARIO
     private UsuarioModel construirUsuario(CrearUsuarioDTO crearUsuarioDTO, RolModel rol) {
         UsuarioModel usuario = UsuarioModel.builder()
-                .nombre(normalizarTextos(crearUsuarioDTO.getNombre().trim().toUpperCase()))
-                .apellido(normalizarTextos(crearUsuarioDTO.getApellido().trim().toUpperCase()))
+                .nombre(normalizarTextos(crearUsuarioDTO.getNombre().trim()))
+                .apellido(normalizarTextos(crearUsuarioDTO.getApellido().trim()))
                 .email(crearUsuarioDTO.getEmail().trim())
                 .password(passwordEncoder.encode(crearUsuarioDTO.getPassword().trim()))
                 .fechaModificacion("")
@@ -165,7 +202,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Asignar la fecha de creación
         CrearUsuarioDTO usuarioDTO = new CrearUsuarioDTO();
-        usuarioDTO.setFechaCreacion(); // Asegúrate de que este método esté correctamente implementado
+        usuarioDTO.setFechaCreacion();
         usuario.setFechaCreacion(usuarioDTO.getFechaCreacion());
 
         return usuario;

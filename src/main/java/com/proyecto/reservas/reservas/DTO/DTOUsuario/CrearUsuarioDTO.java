@@ -35,6 +35,8 @@ public class CrearUsuarioDTO {
 
     private String fechaCreacion;
 
+    private String rol;
+
     // La validación de @Email no permite espacios al inicio ni al final, así que
     // antes de que salte la validación, aquí le estoy poniendo el .trim() para que
     // se guarde sin espacios

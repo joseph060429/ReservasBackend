@@ -36,6 +36,9 @@ public class UsuarioModel {
     @NotBlank(message = "El email no puede estar en blanco")
     private String email;
 
+    //Añadir numero de telefono
+    
+
     // @NotBlank(message = "La contraseña no puede estar en blanco, ingrese números o letras")
     // private String password;
 
