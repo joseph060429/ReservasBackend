@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.reservas.reservas.Models.UsuarioModel;
-import com.proyecto.reservas.reservas.Repositories.UsuarioRepository;
+import com.proyecto.reservas.reservas.Repositories.UserRepository;
 import com.proyecto.reservas.reservas.Security.Jwt.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,9 +28,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     
     private JwtUtils jwtUtils;
 
-    private UsuarioRepository usuarioRepositorio;
+    private UserRepository usuarioRepositorio;
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils, UsuarioRepository usuarioRepositorio) {
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, UserRepository usuarioRepositorio) {
         this.jwtUtils = jwtUtils;
         this.usuarioRepositorio = usuarioRepositorio;
     }

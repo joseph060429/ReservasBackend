@@ -7,14 +7,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.reservas.reservas.Models.UsuarioModel;
-import com.proyecto.reservas.reservas.Repositories.UsuarioRepository;
+import com.proyecto.reservas.reservas.Repositories.UserRepository;
 
 
 @Service
 public class UsuarioDetailsServiceImpl implements UserDetailsService  {
 
      @Autowired
-    private UsuarioRepository usuarioRepositorio;
+    private UserRepository usuarioRepositorio;
     
     // CLASE DE SPRING SECURITY PARA CARGAR LOS DETALLES DEL USUARIO A PARTIR DE SU CORREO ELECTRÓNICO
     @Override

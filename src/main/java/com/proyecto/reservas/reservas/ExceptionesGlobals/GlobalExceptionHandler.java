@@ -33,7 +33,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    //MÉTODO QUE MANEJA LAS EXCEPCIONES DE rollback Y PROPAGA LAS ConstraintViolationException SI EXISTEN 
+    // MÉTODO QUE MANEJA LAS EXCEPCIONES DE rollback Y PROPAGA LAS
+    // ConstraintViolationException SI EXISTEN
     @ExceptionHandler(RollbackException.class)
     public ResponseEntity<Map<String, String>> handleRollbackException(RollbackException ex) {
         if (ex.getCause() instanceof ConstraintViolationException) {
@@ -43,6 +44,13 @@ public class GlobalExceptionHandler {
                     .forEach(violation -> errors.put(violation.getPropertyPath().toString(), violation.getMessage()));
             return ResponseEntity.badRequest().body(errors);
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno del servidor"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error interno del servidor"));
+    }
+
+    // MÉTODO QUE MANEJA LAS EXCEPCIONES DE PERMISOS DE LOS USUARIOS
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<String> handleSecurityException(SecurityException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 }

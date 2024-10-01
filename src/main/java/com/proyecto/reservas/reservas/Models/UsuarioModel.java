@@ -36,17 +36,12 @@ public class UsuarioModel {
     @NotBlank(message = "El email no puede estar en blanco")
     private String email;
 
-    //Añadir numero de telefono
+    private Long numTele;
     
-
-    // @NotBlank(message = "La contraseña no puede estar en blanco, ingrese números o letras")
-    // private String password;
-
     @NotBlank(message = "La contraseña no puede estar en blanco, ingrese números o letras")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
     
-
     private String fechaCreacion;
 
     private String fechaModificacion;

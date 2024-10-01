@@ -12,7 +12,7 @@ import com.proyecto.reservas.reservas.Enum.ERol;
 import com.proyecto.reservas.reservas.Models.RolModel;
 import com.proyecto.reservas.reservas.Models.UsuarioModel;
 import com.proyecto.reservas.reservas.Repositories.RolRepository;
-import com.proyecto.reservas.reservas.Repositories.UsuarioRepository;
+import com.proyecto.reservas.reservas.Repositories.UserRepository;
 import java.util.Optional;
 
 @Service
@@ -23,14 +23,14 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     @Autowired
     private RolRepository rolRepository;
 
     // IMPLEMENTACION DEL METODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
     // LA PRIMERA LETRA DDEL NOMBRE Y APELLIDO EN MAYÚSCULA)
-    private String normalizarTextos(String text) {
+    public String normalizarTextos(String text) {
 
         // Elimino primero los acentos
         String textoNormalizado = Normalizer.normalize(text, Normalizer.Form.NFD)
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // IMPLEMENTACION DEL METODO PARA COMPROBAR QUE LA CONTRASEÑA SEA VÁLIDA
-    private ResponseEntity<?> validarPassword(String password) {
+    public ResponseEntity<?> validarPassword(String password) {
         // VerificO que la contraseña no tenga más de 15 caracteres
         if (password.length() > 15) {
             return ResponseEntity.badRequest().body("La contraseña no puede tener más de 15 caracteres.");
