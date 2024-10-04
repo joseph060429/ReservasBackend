@@ -1,7 +1,6 @@
 package com.proyecto.reservas.reservas.Services.OwnerService;
 
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,8 @@ public class OwnerServiceImpl implements OwnerService {
     @Autowired
     private RolRepository rolRepository;
 
+
+     // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR ROL DE OWNER A USER
     @Override
     public ResponseEntity<?> actualizarRolOwnerAUser(String token, JwtUtils jwtUtils) {
         // Obtengo el JWT y extraigo el email del token
@@ -46,7 +47,7 @@ public class OwnerServiceImpl implements OwnerService {
                         .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
 
                 // Actualizo el rol del usuario a PENDING_OWNER y establezco el estado a
-                // PENDIENTE
+                // NULL
                 usuario.setRol(rolUser);
                 usuario.setEstado(null);
 
