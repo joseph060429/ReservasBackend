@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.proyecto.reservas.reservas.AuthService.UsuarioDetailsServiceImpl;
 import com.proyecto.reservas.reservas.Security.Jwt.JwtUtils;
+import com.proyecto.reservas.reservas.Services.AuthService.UserDetails.UsuarioDetailsServiceImpl;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -12,15 +12,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
 import com.proyecto.reservas.reservas.Repositories.UserRepository;
 import com.proyecto.reservas.reservas.Security.Filter.JwtAuthenticationFilter;
 import com.proyecto.reservas.reservas.Security.Filter.JwtAuthorizationFilter;
 import com.proyecto.reservas.reservas.Security.Jwt.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
-
 import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,7 +74,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
-
     }
 
     @Bean

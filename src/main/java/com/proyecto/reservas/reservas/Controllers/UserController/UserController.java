@@ -43,4 +43,9 @@ public class UserController {
         return userService.actualizarUsuario(actualizarUsuarioDTO, token, jwtUtils);
     }
 
+    @PatchMapping("/actualizarRolAOwner")
+    public ResponseEntity<?> actualizarRolAOwner(@RequestHeader("Authorization") String token) {
+        return userService.actualizarRolUsuarioAOwner(token, jwtUtils);
+    }
+
 }

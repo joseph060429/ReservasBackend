@@ -5,9 +5,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+// import org.springframework.validation.annotation.Validated;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.proyecto.reservas.reservas.DTO.DTOUsuario.CrearUsuarioDTO;
+import com.proyecto.reservas.reservas.Enum.EEstado;
 import com.proyecto.reservas.reservas.Enum.ERol;
 import com.proyecto.reservas.reservas.Models.RolModel;
 import com.proyecto.reservas.reservas.Models.UsuarioModel;
@@ -16,7 +17,7 @@ import com.proyecto.reservas.reservas.Repositories.UserRepository;
 import java.util.Optional;
 
 @Service
-@Validated
+// @Validated
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -62,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
         verificarYCrearRol(ERol.ADMIN);
         verificarYCrearRol(ERol.OWNER);
         verificarYCrearRol(ERol.USER);
+        verificarYCrearRol(ERol.PENDING_OWNER);
         // verificarYCrearRol(ERol.INVITED); // Creo que no hace falta porque en el
         // front se hace una comprobación de que si no tiene token que lo envie al login
     }
@@ -143,7 +145,10 @@ public class AuthServiceImpl implements AuthService {
         String apellido = crearUsuarioDTO.getApellido().trim();
         String email = crearUsuarioDTO.getEmail().trim();
         String password = crearUsuarioDTO.getPassword().trim();
-        String rolSeleccionado = crearUsuarioDTO.getRol().trim().toUpperCase(); // Asi el usuario seleccione user en minúscula se pondrá siempre en mayúscula porque lo tengo con mayúsculas en el ENUM
+        String rolSeleccionado = crearUsuarioDTO.getRol().trim().toUpperCase(); // Asi el usuario seleccione user en
+                                                                                // minúscula se pondrá siempre en
+                                                                                // mayúscula porque lo tengo con
+                                                                                // mayúsculas en el ENUM
 
         if (usuarioRepository.existsByEmail(email)) {
             return ResponseEntity.badRequest().body("Prueba con otro email");
@@ -158,29 +163,45 @@ public class AuthServiceImpl implements AuthService {
 
         existeElRol(); // Me aseguro si ese rol existe en la base de datos, y si no existe que se cree
 
-        // Validar si el rol seleccionado es válido
+        // Valido si el rol seleccionado es válido
         if (!rolSeleccionado.equals(ERol.USER.name()) && !rolSeleccionado.equals(ERol.OWNER.name())) {
             return ResponseEntity.badRequest().body("El rol seleccionado no es válido");
         }
 
-        // Obtengo el rol de usuario directamente usando el nombre del rol (USER en este
-        // caso)
-        RolModel rolUsuario = rolRepository.findByName(rolSeleccionado)
-                .orElseThrow(() -> new RuntimeException("Rol de usuario no encontrado " + rolSeleccionado));
+        // Si selecciona el rol OWNER
+        if (rolSeleccionado.equals(ERol.OWNER.name())) {
+            // Asigno rol PENDING_OWNER en lugar de OWNER, y estado PENDIENTE
+            RolModel rolPendingOwner = rolRepository.findByName(ERol.PENDING_OWNER.name())
+                    .orElseThrow(() -> new RuntimeException("Rol PENDING_OWNER no encontrado"));
+            crearUsuarioDTO.setNombre(nombre);
+            crearUsuarioDTO.setApellido(apellido);
+            crearUsuarioDTO.setEmail(email);
+            crearUsuarioDTO.setPassword(password);
+            crearUsuarioDTO.setRol(ERol.PENDING_OWNER.name()); // Asigno rol PENDING_OWNER
+            crearUsuarioDTO.setEstado(EEstado.PENDIENTE); // Estado PENDIENTE
+            UsuarioModel usuario = construirUsuario(crearUsuarioDTO, rolPendingOwner);
+            usuarioRepository.save(usuario);
 
-        // Modifico el DTO antes de construir el usuario
-        crearUsuarioDTO.setEmail(email);
-        crearUsuarioDTO.setNombre(nombre);
-        crearUsuarioDTO.setApellido(apellido);
-        crearUsuarioDTO.setPassword(password);
+            return ResponseEntity.ok("Usuario creado correctamente, pendiente de confirmación por el administrador");
 
-        // Construir el usuario asignándole el rol encontrado
-        UsuarioModel usuario = construirUsuario(crearUsuarioDTO, rolUsuario);
+        } else if (rolSeleccionado.equals(ERol.USER.name())) {
+            // Si selecciona USER, asigno directamente el rol USER
+            RolModel rolUser = rolRepository.findByName(ERol.USER.name())
+                    .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
 
-        // Guardar el nuevo usuario en la base de datos
-        usuarioRepository.save(usuario);
+            crearUsuarioDTO.setNombre(nombre);
+            crearUsuarioDTO.setApellido(apellido);
+            crearUsuarioDTO.setEmail(email);
+            crearUsuarioDTO.setPassword(password);
+            crearUsuarioDTO.setRol(ERol.USER.name());
+            UsuarioModel usuario = construirUsuario(crearUsuarioDTO, rolUser);
+            usuarioRepository.save(usuario);
 
-        return ResponseEntity.ok("Usuario creado correctamente");
+            return ResponseEntity.ok("Usuario creado correctamente");
+        }
+
+        return ResponseEntity.badRequest().body("Error inesperado");
+
     }
 
     // IMPLEMENTACION DEL METODO PARA CONSTRUIR UN NUEVO USUARIO
@@ -192,6 +213,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(crearUsuarioDTO.getPassword().trim()))
                 .fechaModificacion("")
                 .fechaCreacion("")
+                .estado(crearUsuarioDTO.getEstado())
                 .rol(rol) // Asignar el objeto RolModel al campo rol del usuario
                 .build();
 

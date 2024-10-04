@@ -19,8 +19,7 @@ public class AuthController {
     // EXCEPTIONSGLOBLAS, YA MANEJO LOS ERRORES GLOBALES
     @PostMapping("/crearUsuario")
     public ResponseEntity<?> crearUsuario(@Valid @RequestBody CrearUsuarioDTO crearUsuarioDTO) {
-        ResponseEntity<?> response = authService.crearNuevoUsuario(crearUsuarioDTO);
-        return ResponseEntity.ok(response.getBody());
+        return authService.crearNuevoUsuario(crearUsuarioDTO);
     }
 
 }

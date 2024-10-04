@@ -1,4 +1,4 @@
-package com.proyecto.reservas.reservas.AuthService;
+package com.proyecto.reservas.reservas.Services.AuthService.UserDetails;
 
 
 import org.springframework.security.core.GrantedAuthority;

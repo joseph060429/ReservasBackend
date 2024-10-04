@@ -15,7 +15,7 @@ import jakarta.validation.constraints.*;
 @AllArgsConstructor
 public class ActualizarUsuarioDTO {
 
-
+    
     @Pattern(regexp = "[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+", message = "El nombre solo puede contener letras y caracteres especiales como tildes")
     @Size(min = 2, max = 70, message = "El nombre debe tener entre 2 y 70 caracteres")
     private String nombre;

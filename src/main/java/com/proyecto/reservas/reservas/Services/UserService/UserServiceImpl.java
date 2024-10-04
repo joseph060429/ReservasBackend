@@ -7,9 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.proyecto.reservas.reservas.DTO.DTOUsuario.ActualizarUsuarioDTO;
+import com.proyecto.reservas.reservas.Enum.EEstado;
+import com.proyecto.reservas.reservas.Enum.ERol;
+import com.proyecto.reservas.reservas.Models.RolModel;
 import com.proyecto.reservas.reservas.Models.UsuarioModel;
+import com.proyecto.reservas.reservas.Repositories.RolRepository;
 import com.proyecto.reservas.reservas.Repositories.UserRepository;
 import com.proyecto.reservas.reservas.Security.Jwt.JwtUtils;
 import com.proyecto.reservas.reservas.Services.AuthService.AuthServiceImpl;
@@ -18,13 +21,16 @@ import com.proyecto.reservas.reservas.Services.AuthService.AuthServiceImpl;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserRepository usuarioRepositorio;
+    private UserRepository userRepository;
 
     @Autowired
     private AuthServiceImpl authServiceImpl;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RolRepository rolRepository;
 
     // IMPLEMENTACIÓN DEL MÉTODO PARA ELIMINAR UN USUARIO SIENDO USUARIO
     @Override
@@ -35,7 +41,7 @@ public class UserServiceImpl implements UserService {
         String emailFromToken = jwtUtils.getEmailFromToken(jwtToken);
 
         // Busco al usuario por el email que me salió en el token
-        Optional<UsuarioModel> usuarioOptional = usuarioRepositorio.findByEmail(emailFromToken);
+        Optional<UsuarioModel> usuarioOptional = userRepository.findByEmail(emailFromToken);
 
         // Si está lo traigo
         if (usuarioOptional.isPresent()) {
@@ -43,7 +49,7 @@ public class UserServiceImpl implements UserService {
             // Comparo si el email encontrado es igual al email del token
             if (usuario.getEmail().equals(emailFromToken)) {
                 // Si es igual, elimino el usuario
-                usuarioRepositorio.deleteById(usuario.getUsuarioId());
+                userRepository.deleteById(usuario.getUsuarioId());
                 return ResponseEntity.ok("Usuario eliminado correctamente");
             } else {
                 // Si no es igual, no estás autorizado, porque solo podrá eliminar su usuario
@@ -65,7 +71,7 @@ public class UserServiceImpl implements UserService {
         String emailFromToken = jwtUtils.getEmailFromToken(jwtToken);
         System.out.println("EMAIL DEL TOKEN: " + emailFromToken);
 
-        Optional<UsuarioModel> usuarioOptional = usuarioRepositorio.findByEmail(emailFromToken);
+        Optional<UsuarioModel> usuarioOptional = userRepository.findByEmail(emailFromToken);
 
         if (usuarioOptional.isPresent()) {
             UsuarioModel usuario = usuarioOptional.get();
@@ -81,8 +87,8 @@ public class UserServiceImpl implements UserService {
 
             // Para que me actualice el email si coincide con el que ya tiene
             if (actualizarUsuarioDTO.getEmail() != null && !actualizarUsuarioDTO.getEmail().isEmpty()) {
-                // Validar que el nuevo email no exista
-                Optional<UsuarioModel> existeEmail = usuarioRepositorio
+                // Valido que el nuevo email no exista
+                Optional<UsuarioModel> existeEmail = userRepository
                         .findByEmail(actualizarUsuarioDTO.getEmail().trim());
                 if (existeEmail.isPresent()) {
                     if (emailFromToken.equals(actualizarUsuarioDTO.getEmail().trim())) {
@@ -97,7 +103,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            // Validar la contraseña
+            // Valido la contraseña
             if (actualizarUsuarioDTO.getPassword() != null && !actualizarUsuarioDTO.getPassword().isEmpty()) {
                 ResponseEntity<?> response = authServiceImpl.validarPassword(actualizarUsuarioDTO.getPassword().trim());
 
@@ -114,18 +120,62 @@ public class UserServiceImpl implements UserService {
             actualizarUsuarioDTO.setFechaModificacion();
             usuario.setFechaModificacion(actualizarUsuarioDTO.getFechaModificacion());
 
-            // Guardar los cambios en la base de datos
-            usuarioRepositorio.save(usuario);
+            // Guardo los cambios en la base de datos
+            userRepository.save(usuario);
 
-            // Responder con éxito
+            // Respondo con éxito
             return ResponseEntity.ok("Usuario actualizado correctamente");
         } else {
-            // Responder con error si no se encuentra el usuario
+            // Respuesta con error si no se encuentra el usuario
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("No se pudo actualizar el usuario debido a un problema desconocido");
         }
     }
 
-    // Ver si tambien se puede actualizar roles, tipo si es OWNER a USER Y viceversa
+    // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR ROL DE USER A OWNER
+    @Override
+    public ResponseEntity<?> actualizarRolUsuarioAOwner(String token, JwtUtils jwtUtils) {
+        // Obtengo el JWT y extraigo el email del token
+        String jwtToken = token.replace("Bearer ", "");
+        String emailFromToken = jwtUtils.getEmailFromToken(jwtToken);
+        System.out.println("EMAIL DEL TOKEN: " + emailFromToken);
+
+        // Busco el usuario basado en el email del token
+        Optional<UsuarioModel> usuarioOptional = userRepository.findByEmail(emailFromToken);
+
+        // Verifico si el usuario existe
+        if (usuarioOptional.isPresent()) {
+            UsuarioModel usuario = usuarioOptional.get();
+            // Obtengo el rol actual del usuario
+            ERol rolUsuarioActual = usuario.getRol().getName();
+            System.out.println("ROL DEL USUARIO: " + rolUsuarioActual);
+
+            // Si el rol actual es USER, procedo a actualizarlo a PENDING_OWNER
+            if (rolUsuarioActual.equals(ERol.USER)) {
+                // Busco el rol PENDING_OWNER en la base de datos
+                RolModel rolPendingOwner = rolRepository.findByName(ERol.PENDING_OWNER.name())
+                        .orElseThrow(() -> new RuntimeException("Rol PENDING_OWNER no encontrado"));
+
+                // Actualizo el rol del usuario a PENDING_OWNER y establezco el estado a
+                // PENDIENTE
+                usuario.setRol(rolPendingOwner);
+                usuario.setEstado(EEstado.PENDIENTE);
+
+                // Guardo los cambios en el repositorio
+                userRepository.save(usuario);
+
+                // Retorno una respuesta exitosa
+                return ResponseEntity
+                        .ok("Rol actualizado correctamente a PENDING_OWNER y estado establecido a PENDIENTE para confirmación del administrador.");
+            }
+
+            // Si el rol no es USER, devuelvo un mensaje de error
+            return ResponseEntity.badRequest().body("No se puede actualizar el rol desde el estado actual.");
+        } else {
+            // Si no encuentro al usuario, retorno un mensaje de error
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No se pudo actualizar el usuario debido a un problema desconocido.");
+        }
+    }
 
 }

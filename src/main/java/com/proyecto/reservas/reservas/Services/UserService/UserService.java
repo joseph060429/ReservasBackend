@@ -10,10 +10,12 @@ public interface UserService {
     // METODO PARA ELIMINAR USUARIO
     ResponseEntity<String> eliminarUsuarioSiendoUsuario(String token, JwtUtils jwtUtils);
 
-    // String actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO, String token,
-    //         JwtUtils jwtUtils);
-
+    // METODO PARA ACTUALIZAR LOS CAMPOS DE UN USUARIO O UN OWNER
     ResponseEntity<String> actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO, String token,
             JwtUtils jwtUtils);
+
+    // METODO PARA ACTUALIZAR EL ROL DE UN USUARIO, DE USER A OWNER
+    ResponseEntity<?> actualizarRolUsuarioAOwner(String token,
+    JwtUtils jwtUtils);
 
 }

@@ -3,6 +3,11 @@ package com.proyecto.reservas.reservas.DTO.DTOUsuario;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import com.proyecto.reservas.reservas.Enum.EEstado;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 // import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -35,6 +40,9 @@ public class CrearUsuarioDTO {
     private String fechaCreacion;
 
     private String rol;
+
+    @Enumerated(EnumType.STRING)
+    private EEstado estado;
 
     // La validación de @Email no permite espacios al inicio ni al final, así que
     // antes de que salte la validación, aquí le estoy poniendo el .trim() para que

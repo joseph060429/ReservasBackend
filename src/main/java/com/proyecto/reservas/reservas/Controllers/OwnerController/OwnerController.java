@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.proyecto.reservas.reservas.DTO.DTOUsuario.ActualizarUsuarioDTO;
 import com.proyecto.reservas.reservas.Security.Annotations.SecuredByRole;
 import com.proyecto.reservas.reservas.Security.Jwt.JwtUtils;
+import com.proyecto.reservas.reservas.Services.OwnerService.OwnerService;
 import com.proyecto.reservas.reservas.Services.UserService.UserService;
 import jakarta.validation.Valid;
 
@@ -28,6 +29,9 @@ public class OwnerController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OwnerService ownerService;
+
     // CONTROLADOR PARA BORRAR UN USUARIO SIENDO USUARIO O OWNER
     @DeleteMapping("/borrarUsuario")
     public ResponseEntity<String> borrarUsuario(@RequestHeader("Authorization") String token) {
@@ -40,6 +44,11 @@ public class OwnerController {
             @RequestBody @Valid ActualizarUsuarioDTO actualizarUsuarioDTO,
             @RequestHeader("Authorization") String token) {
         return userService.actualizarUsuario(actualizarUsuarioDTO, token, jwtUtils);
+    }
+
+    @PatchMapping("/actualizarRolAUser")
+    public ResponseEntity<?> actualizarRolAUser(@RequestHeader("Authorization") String token) {
+        return ownerService.actualizarRolOwnerAUser(token, jwtUtils);
     }
 
 }

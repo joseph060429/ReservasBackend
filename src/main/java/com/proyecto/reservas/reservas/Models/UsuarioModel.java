@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.proyecto.reservas.reservas.Enum.EEstado;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -36,15 +39,16 @@ public class UsuarioModel {
     @NotBlank(message = "El email no puede estar en blanco")
     private String email;
 
-    private Long numTele;
-    
     @NotBlank(message = "La contraseña no puede estar en blanco, ingrese números o letras")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
-    
+
     private String fechaCreacion;
 
     private String fechaModificacion;
+
+    @Enumerated(EnumType.STRING)
+    private EEstado estado;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
