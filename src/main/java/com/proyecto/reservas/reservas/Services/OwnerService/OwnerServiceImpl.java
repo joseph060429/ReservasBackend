@@ -22,7 +22,7 @@ public class OwnerServiceImpl implements OwnerService {
     private RolRepository rolRepository;
 
 
-     // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR ROL DE OWNER A USER
+     // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR EL ROL DE UN USUARIO, DE OWNER A USER  
     @Override
     public ResponseEntity<?> actualizarRolOwnerAUser(String token, JwtUtils jwtUtils) {
         // Obtengo el JWT y extraigo el email del token

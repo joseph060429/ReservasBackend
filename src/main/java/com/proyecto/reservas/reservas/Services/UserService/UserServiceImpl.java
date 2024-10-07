@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RolRepository rolRepository;
 
-    // IMPLEMENTACIÓN DEL MÉTODO PARA ELIMINAR UN USUARIO SIENDO USUARIO
+    // IMPLEMENTACIÓN DEL MÉTODO PARA ELIMINAR UN USUARIO O UN OWNER
     @Override
     public ResponseEntity<String> eliminarUsuarioSiendoUsuario(String token, JwtUtils jwtUtils) {
 
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // IMPLEMENTACION DEL MÉTODO PARA ACTUALIZAR UN USUARIO SIENDO USUARIO
+    // IMPLEMENTACION DEL MÉTODO PARA ACTUALIZAR LOS CAMPOS DE UN USUARIO O UN OWNER
     @Override
     public ResponseEntity<String> actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO, String token,
             JwtUtils jwtUtils) {
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR ROL DE USER A OWNER
+    // IMPLEMENTACIÓN DEL MÉTODO PARA ACTUALIZAR EL ROL DE UN USUARIO, DE USER A OWNER
     @Override
     public ResponseEntity<?> actualizarRolUsuarioAOwner(String token, JwtUtils jwtUtils) {
         // Obtengo el JWT y extraigo el email del token

@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RolRepository rolRepository;
 
-    // IMPLEMENTACION DEL METODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
+    // MÉTODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
     // LA PRIMERA LETRA DDEL NOMBRE Y APELLIDO EN MAYÚSCULA)
     public String normalizarTextos(String text) {
 
@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    // IMPLEMENTACION DEL METODO PARA VER SI ESE ROL EXISTE EN LA BASE DE DATOS
+    // MÉTODO PARA VER SI ESE ROL EXISTE EN LA BASE DE DATOS
     private void existeElRol() {
         verificarYCrearRol(ERol.ADMIN);
         verificarYCrearRol(ERol.OWNER);
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         // front se hace una comprobación de que si no tiene token que lo envie al login
     }
 
-    // SI EL ROL NO EXISTE LO HE PUESTO POR DEFECTO QUE SE CREEN TODOS LOS TIPOS DE
+    // MÉTODO PARA VERIFICAR SI EL ROL EXISTE, SI NO EXISTE LO HE PUESTO POR DEFECTO PARA SE CREEN TODOS LOS TIPOS DE
     // ROL EN MI APP
     private void verificarYCrearRol(ERol rol) {
         // Verifico si el rol ya existe en la base de datos
@@ -83,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    // IMPLEMENTACION DEL METODO PARA COMPROBAR QUE LA CONTRASEÑA SEA VÁLIDA
+    // MÉTODO PARA COMPROBAR QUE LA CONTRASEÑA SEA VÁLIDA
     public ResponseEntity<?> validarPassword(String password) {
         // VerificO que la contraseña no tenga más de 15 caracteres
         if (password.length() > 15) {
@@ -204,7 +204,7 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    // IMPLEMENTACION DEL METODO PARA CONSTRUIR UN NUEVO USUARIO
+    //MÉTODO PARA CONSTRUIR UN NUEVO USUARIO
     private UsuarioModel construirUsuario(CrearUsuarioDTO crearUsuarioDTO, RolModel rol) {
         UsuarioModel usuario = UsuarioModel.builder()
                 .nombre(normalizarTextos(crearUsuarioDTO.getNombre().trim()))

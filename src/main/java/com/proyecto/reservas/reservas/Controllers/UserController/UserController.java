@@ -29,13 +29,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // CONTROLADOR PARA BORRAR UN USUARIO SIENDO USUARIO O OWNER
+    // CONTROLADOR PARA PARA ELIMINAR UN USUARIO O UN OWNER
     @DeleteMapping("/borrarUsuario")
     public ResponseEntity<String> borrarUsuario(@RequestHeader("Authorization") String token) {
         return userService.eliminarUsuarioSiendoUsuario(token, jwtUtils);
     }
 
-    // CONTROLADOR PARA ACTUALIZAR EL USUARIO SIENDO USUARIO O OWNER
+    // CONTROLADOR PARA ACTUALIZAR LOS CAMPOS DE UN USUARIO O UN OWNER
     @PatchMapping("/actualizarUsuario")
     public ResponseEntity<String> actualizarUsuario(
             @RequestBody @Valid ActualizarUsuarioDTO actualizarUsuarioDTO,
@@ -43,7 +43,7 @@ public class UserController {
         return userService.actualizarUsuario(actualizarUsuarioDTO, token, jwtUtils);
     }
 
-    // CONTROLADOR PARA ACTUALIZAR EL ROL A OWNER
+    // CONTROLADOR PARA ACTUALIZAR EL ROL DE UN USUARIO, DE USER A OWNER
     @PatchMapping("/actualizarRolAOwner")
     public ResponseEntity<?> actualizarRolAOwner(@RequestHeader("Authorization") String token) {
         return userService.actualizarRolUsuarioAOwner(token, jwtUtils);

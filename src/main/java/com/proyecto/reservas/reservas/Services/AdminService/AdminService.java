@@ -1,5 +1,7 @@
 package com.proyecto.reservas.reservas.Services.AdminService;
 
+import java.util.Set;
+
 import org.springframework.http.ResponseEntity;
 
 public interface AdminService {
@@ -8,7 +10,7 @@ public interface AdminService {
     // LOS QUE SE CREAN SIENDO USER Y LUEGO QUIEREN CAMBIAR A OWNER
     ResponseEntity<?> actualizarRolAOwner(String usuarioId);
 
-
-    // PENDIENTE METODO PARA ACTUALIZAR LOS ROLES A TODOS LOS USUARIOS DE MI APLICACION
+    // MÉTODO PARA ACTUALIZAR LOS ROLES(ADMIN, USER, OWNER) A LOS USUARIOS
+    ResponseEntity<?> actualizarRolUsuario(String usuarioId, Set<String> nuevosRoles);
 
 }

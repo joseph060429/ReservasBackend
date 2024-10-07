@@ -32,13 +32,13 @@ public class OwnerController {
     @Autowired
     private OwnerService ownerService;
 
-    // CONTROLADOR PARA BORRAR UN USUARIO SIENDO USUARIO O OWNER
+    // CONTROLADOR PARA PARA ELIMINAR UN USUARIO O UN OWNER
     @DeleteMapping("/borrarUsuario")
     public ResponseEntity<String> borrarUsuario(@RequestHeader("Authorization") String token) {
         return userService.eliminarUsuarioSiendoUsuario(token, jwtUtils);
     }
 
-    // CONTROLADOR PARA ACTUALIZAR EL USUARIO SIENDO USUARIO O OWNER
+    // CONTROLADOR PARA ACTUALIZAR LOS CAMPOS DE UN USUARIO O UN OWNER
     @PatchMapping("/actualizarUsuario")
     public ResponseEntity<String> actualizarUsuario(
             @RequestBody @Valid ActualizarUsuarioDTO actualizarUsuarioDTO,
@@ -46,7 +46,7 @@ public class OwnerController {
         return userService.actualizarUsuario(actualizarUsuarioDTO, token, jwtUtils);
     }
 
-    // CONTROLADOR PARA ACTUALIZAR EL ROL A USER
+    // CONTROLADOR PARA ACTUALIZAR EL ROL DE UN USUARIO, DE OWNER A USER 
     @PatchMapping("/actualizarRolAUser")
     public ResponseEntity<?> actualizarRolAUser(@RequestHeader("Authorization") String token) {
         return ownerService.actualizarRolOwnerAUser(token, jwtUtils);
