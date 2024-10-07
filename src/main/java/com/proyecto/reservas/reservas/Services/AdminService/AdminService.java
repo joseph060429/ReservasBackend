@@ -13,4 +13,7 @@ public interface AdminService {
     // MÉTODO PARA ACTUALIZAR LOS ROLES(ADMIN, USER, OWNER) A LOS USUARIOS
     ResponseEntity<?> actualizarRolUsuario(String usuarioId, Set<String> nuevosRoles);
 
+    // MÉTODO PARA ELIMINAR A LOS USUARIOS
+    ResponseEntity<?> eliminarUsuario(String usuarioId);
+
 }

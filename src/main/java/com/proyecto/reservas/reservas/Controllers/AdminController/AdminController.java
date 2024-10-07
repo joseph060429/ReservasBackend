@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,12 @@ public class AdminController {
         nuevosRoles.add(nuevoRol);
 
         return adminService.actualizarRolUsuario(usuarioId, nuevosRoles);
+    }
+
+    // CONTROLADOR PARA ELIMINAR A LOS USUARIOS
+    @DeleteMapping("/eliminarUsuario")
+    public ResponseEntity<?> eliminarUsuario(@RequestParam("id") String usuarioId) {
+        return adminService.eliminarUsuario(usuarioId);
     }
 
 }
