@@ -1,6 +1,7 @@
 package com.proyecto.reservas.reservas.Services.AdminService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -152,6 +153,41 @@ public class AdminServiceImpl implements AdminService {
             // Si no existe devuelvo un mensaje de usuario no encontrado
         } else {
             return ResponseEntity.badRequest().body("Usuario no encontrado");
+
+        }
+    }
+
+    // IMPLEMENTACIÓN DEL MÉTODO PARA LISTAR UN USUARIO POR SU ID
+    @Override
+    public ResponseEntity<?> listarUsuarioById(String usuarioId) {
+
+        // Busco al usuario por su ID
+        Optional<UsuarioModel> usuarioOptional = userRepository.findById(usuarioId);
+        // Si existe traigo al usuario
+        if (usuarioOptional.isPresent()) {
+            UsuarioModel usuario = usuarioOptional.get();
+            // Devuelvo todo el usuario
+            return ResponseEntity.ok(usuario);
+            // Si no existe devuelvo un mensaje de usuario no encontrado
+        } else {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+
+        }
+    }
+
+    // IMPLEMENTACIÓN DEL MÉTODO PARA LISTAR A TODOS LOS USUARIOS
+    @Override
+    public ResponseEntity<?> listarUsuarios() {
+
+        // Lista para almacenar a todos los usuarios
+        List<UsuarioModel> usuarios = userRepository.findAll();
+        // Si la lista no está vacía, traigo a todos los usuarios
+        if (!usuarios.isEmpty()) {
+            // Devuelvo a todos los usuarios
+            return ResponseEntity.ok(usuarios);
+        } else {
+            // Si la lista está vacía, devuelvo usuario no encontrado
+            return ResponseEntity.noContent().build();
 
         }
     }

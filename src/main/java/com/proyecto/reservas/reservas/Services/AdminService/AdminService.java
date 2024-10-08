@@ -16,4 +16,9 @@ public interface AdminService {
     // MÉTODO PARA ELIMINAR A LOS USUARIOS
     ResponseEntity<?> eliminarUsuario(String usuarioId);
 
+    // MÉTODO PARA LISTAR UN USUARIO POR SU ID
+    ResponseEntity<?> listarUsuarioById(String usuarioId);
+
+    // MÉTODO PARA LISTAR A TODOS LOS USUARIOS
+    ResponseEntity<?> listarUsuarios();
 }
