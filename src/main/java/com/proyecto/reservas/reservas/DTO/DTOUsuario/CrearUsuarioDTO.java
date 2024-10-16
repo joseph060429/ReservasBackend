@@ -3,12 +3,9 @@ package com.proyecto.reservas.reservas.DTO.DTOUsuario;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
 import com.proyecto.reservas.reservas.Enum.EEstado;
-
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-// import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -17,8 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CrearUsuarioDTO {
 
-    // private String id;
-
+    
     @NotBlank(message = "El nombre no puede estar en blanco")
     @Pattern(regexp = "[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+", message = "El nombre solo puede contener letras y caracteres especiales como tildes")
     @Size(min = 2, max = 70, message = "El nombre debe tener entre 2 y 70 caracteres")

@@ -52,7 +52,8 @@ public class AdminServiceImpl implements AdminService {
                 return ResponseEntity.ok("Rol actualizado correctamente a OWNER");
             } else {
                 return ResponseEntity.badRequest()
-                        .body("El usuario no está en estado PENDIENTE o su rol no es PENDING_OWNER");
+                        // .body("El usuario no está en estado PENDIENTE o su rol no es PENDING_OWNER");
+                        .body("El usuario ya ha sido ACEPTADO y ya tiene el rol OWNER");
             }
         } else {
             return ResponseEntity.badRequest().body("Usuario no encontrado");

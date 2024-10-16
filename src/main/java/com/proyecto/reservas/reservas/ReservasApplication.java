@@ -10,5 +10,4 @@ public class ReservasApplication {
 		SpringApplication.run(ReservasApplication.class, args);
 		System.out.println("Server arrancado correctamente");
 	}
-
 }

@@ -53,4 +53,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleSecurityException(SecurityException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
+
+    // Manejo de excepciones InvalidTipoPistaException
+    @ExceptionHandler(InvalidTipoPistaException.class)
+    public ResponseEntity<String> handleInvalidTipoPistaException(InvalidTipoPistaException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

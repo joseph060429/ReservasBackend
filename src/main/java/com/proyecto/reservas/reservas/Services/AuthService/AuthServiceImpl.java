@@ -29,8 +29,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RolRepository rolRepository;
 
-    // MÉTODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
+    // IMEPLEMENTACIÓN DEL MÉTODO PARA NORMALIZAR TEXTOS(QUITARLE LOS TILDES Y PONER
     // LA PRIMERA LETRA DDEL NOMBRE Y APELLIDO EN MAYÚSCULA)
+    @Override
     public String normalizarTextos(String text) {
 
         // Elimino primero los acentos
@@ -68,7 +69,8 @@ public class AuthServiceImpl implements AuthService {
         // front se hace una comprobación de que si no tiene token que lo envie al login
     }
 
-    // MÉTODO PARA VERIFICAR SI EL ROL EXISTE, SI NO EXISTE LO HE PUESTO POR DEFECTO PARA SE CREEN TODOS LOS TIPOS DE
+    // MÉTODO PARA VERIFICAR SI EL ROL EXISTE, SI NO EXISTE LO HE PUESTO POR DEFECTO
+    // PARA SE CREEN TODOS LOS TIPOS DE
     // ROL EN MI APP
     private void verificarYCrearRol(ERol rol) {
         // Verifico si el rol ya existe en la base de datos
@@ -140,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
     // IMPLEMENTACION DEL METODO PARA CREAR UN NUEVO USUARIO
     @Override
     public ResponseEntity<?> crearNuevoUsuario(CrearUsuarioDTO crearUsuarioDTO) {
-
+        
         String nombre = crearUsuarioDTO.getNombre().trim();
         String apellido = crearUsuarioDTO.getApellido().trim();
         String email = crearUsuarioDTO.getEmail().trim();
@@ -182,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
             UsuarioModel usuario = construirUsuario(crearUsuarioDTO, rolPendingOwner);
             usuarioRepository.save(usuario);
 
-            return ResponseEntity.ok("Usuario creado correctamente, pendiente de confirmación por el administrador");
+            return ResponseEntity.ok("Usuario creado correctamente, rellene el formulario y espere ser aceptado por el administrador");
 
         } else if (rolSeleccionado.equals(ERol.USER.name())) {
             // Si selecciona USER, asigno directamente el rol USER
@@ -204,7 +206,7 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    //MÉTODO PARA CONSTRUIR UN NUEVO USUARIO
+    // MÉTODO PARA CONSTRUIR UN NUEVO USUARIO
     private UsuarioModel construirUsuario(CrearUsuarioDTO crearUsuarioDTO, RolModel rol) {
         UsuarioModel usuario = UsuarioModel.builder()
                 .nombre(normalizarTextos(crearUsuarioDTO.getNombre().trim()))
